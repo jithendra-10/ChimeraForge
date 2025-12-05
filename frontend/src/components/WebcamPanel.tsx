@@ -38,10 +38,10 @@ export function WebcamPanel({
   // Start frame capture at 2 FPS when Eye is enabled
   useEffect(() => {
     if (eyeEnabled && hasPermission && onFrame) {
-      // Capture frames at 2 FPS (every 500ms)
+      // Capture frames at 0.5 FPS (every 2000ms)
       intervalRef.current = window.setInterval(() => {
         captureFrame();
-      }, 500);
+      }, 2000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

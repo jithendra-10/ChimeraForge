@@ -73,6 +73,11 @@ class EyeModule:
         
         # Subscribe to module state changes
         self.event_bus.subscribe(self.module_id, self._on_event)
+        
+        # State tracking for event filtering
+        self.last_detection_state = False
+        self.last_publish_time = 0
+        self.min_publish_interval = 5.0  # Minimum 5 seconds between redundant events
     
     async def _on_event(self, event: Event) -> None:
         """
@@ -234,14 +239,32 @@ class EyeModule:
                 "height": detection.bounding_box.height
             }
         
-        # Create and publish event
-        event = Event.create(
-            source_module=self.module_id,
-            type=EventType.VISION_EVENT,
-            payload=payload
-        )
+        # Filter redundant events to prevent spamming
+        import time
+        current_time = time.time()
         
-        await self.event_bus.publish(event)
+        # Always publish if state changed (detected vs not detected)
+        state_changed = detection.detected != self.last_detection_state
+        
+        # Always publish if enough time has passed since last event
+        time_elapsed = (current_time - self.last_publish_time) > self.min_publish_interval
+        
+        if state_changed or time_elapsed:
+            # Create and publish event
+            event = Event.create(
+                source_module=self.module_id,
+                type=EventType.VISION_EVENT,
+                payload=payload
+            )
+            
+            await self.event_bus.publish(event)
+            
+            # Update state tracking
+            self.last_detection_state = detection.detected
+            self.last_publish_time = current_time
+        else:
+            # Skip publishing redundant event
+            pass
     
     async def _publish_error_event(self, error_type: str, message: str, 
                                    details: dict, recoverable: bool = True) -> None:
