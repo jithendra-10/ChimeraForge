@@ -172,7 +172,8 @@ class EventBus:
 class EventType:
     """Constants for event types in the system."""
     VISION_EVENT = "VISION_EVENT"
-    AUDIO_EVENT = "AUDIO_EVENT"
+    HEARING_EVENT = "HEARING_EVENT"
+    AUDIO_EVENT = "AUDIO_EVENT"  # Deprecated, use HEARING_EVENT
     SYSTEM_ACTION = "SYSTEM_ACTION"
     SPEECH_COMPLETE = "SPEECH_COMPLETE"
     ACTION_COMPLETE = "ACTION_COMPLETE"

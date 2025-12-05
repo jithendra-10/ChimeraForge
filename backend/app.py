@@ -155,6 +155,17 @@ def root():
     return {"message": "ChimeraForge Backend API", "version": "1.0.0"}
 
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "ok",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "modules": len(module_registry.get_all_modules()),
+        "events_in_memory": len(event_bus.get_all_events())
+    }
+
+
 @app.get("/api/modules", response_model=List[dict])
 def get_modules():
     """

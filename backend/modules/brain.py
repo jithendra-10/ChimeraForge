@@ -77,7 +77,7 @@ class BrainModule:
         if not self.registry.is_enabled(self.module_id):
             return
         
-        if event.type == EventType.VISION_EVENT or event.type == EventType.AUDIO_EVENT:
+        if event.type == EventType.VISION_EVENT or event.type == EventType.HEARING_EVENT:
             # Rate limiting: skip if too soon after last response
             current_time = time.time()
             if current_time - self.last_process_time < self.min_interval:
@@ -135,13 +135,13 @@ class BrainModule:
             else:
                 prompt = "You are a spooky Halloween AI creature. You're looking around but see nothing. Generate a brief, eerie observation about the emptiness (1-2 sentences max). Be creepy and atmospheric. Just respond with the text to speak."
                 
-        elif event.type == EventType.AUDIO_EVENT:
-            # Extract audio event details
+        elif event.type == EventType.HEARING_EVENT:
+            # Extract hearing event details
             payload = event.payload
-            transcript = payload.get("transcript", "")
+            text = payload.get("text", "")
             
             # Create prompt for LLM
-            prompt = f"You are a spooky Halloween AI creature. A human just said to you: '{transcript}'. Respond to them in character. Be eerie, mysterious, but conversational. Keep it brief (1-2 sentences). Just respond with the text to speak."
+            prompt = f"You are a spooky Halloween AI creature. A human just said to you: '{text}'. Respond to them in character. Be eerie, mysterious, but conversational. Keep it brief (1-2 sentences). Just respond with the text to speak."
             detected = True # Treat hearing as a detection so we always speak back
         
         # Call Gemini API with error handling
