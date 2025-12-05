@@ -222,7 +222,7 @@ class BrainModule:
                 details={
                     "error": str(e),
                     "error_type": type(e).__name__,
-                    "vision_event_id": vision_event.id
+                    "vision_event_id": event.id
                 },
                 recoverable=True
             )
