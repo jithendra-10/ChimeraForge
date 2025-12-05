@@ -1,156 +1,146 @@
-/**
- * Ear Module - Voice input using Web Speech Recognition API
- * 
- * Listens to microphone input, converts speech to text,
- * and publishes AUDIO_EVENT to the event bus.
- */
+// Ear Module - Speech-to-text using Web Speech API
 
-import { EventBus, Event } from '../types';
+import { apiClient } from "../api/client";
+
+// Define SpeechRecognition types since they might not be in standard lib
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: any) => void;
+  onend: () => void;
+}
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition: {
+      new(): SpeechRecognition;
+    };
+  }
+}
 
 export class EarModule {
-  private eventBus: EventBus;
   private recognition: SpeechRecognition | null = null;
   private isListening: boolean = false;
-  private enabled: boolean = false;
+  private onStateChange: ((isListening: boolean) => void) | null = null;
 
-  constructor(eventBus: EventBus) {
-    this.eventBus = eventBus;
-    this.initializeSpeechRecognition();
+  constructor() {
+    if ('webkitSpeechRecognition' in window) {
+      this.recognition = new window.webkitSpeechRecognition();
+      this.setupRecognition();
+    } else {
+      console.error("Web Speech API not supported in this browser");
+    }
   }
 
-  private initializeSpeechRecognition(): void {
-    // Check if browser supports Speech Recognition
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      console.error('Speech Recognition not supported in this browser');
-      return;
-    }
+  private setupRecognition() {
+    if (!this.recognition) return;
 
-    this.recognition = new SpeechRecognition();
-    this.recognition.continuous = true; // Keep listening
-    this.recognition.interimResults = false; // Only final results
+    this.recognition.continuous = false; // Stop after one sentence
+    this.recognition.interimResults = false;
     this.recognition.lang = 'en-US';
 
-    // Handle speech recognition results
-    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const last = event.results.length - 1;
-      const transcript = event.results[last][0].transcript;
-      const confidence = event.results[last][0].confidence;
+    this.recognition.onresult = async (event: SpeechRecognitionEvent) => {
+      const result = event.results[event.resultIndex][0];
+      const transcript = result.transcript;
+      const confidence = result.confidence;
 
-      console.log(`Ear: Heard "${transcript}" (confidence: ${confidence})`);
+      console.log(`Ear heard: "${transcript}" (${confidence})`);
 
-      // Publish AUDIO_EVENT
-      this.publishAudioEvent(transcript, confidence);
+      if (transcript.trim().length > 0) {
+        await this.publishHearingEvent(transcript, confidence);
+      }
     };
 
-    // Handle errors
     this.recognition.onerror = (event: any) => {
-      console.error('Ear: Speech recognition error:', event.error);
-      
-      // Publish error event
-      this.eventBus.publish({
-        id: crypto.randomUUID(),
-        source_module: 'ear',
-        type: 'ACTION_ERROR',
-        timestamp: new Date().toISOString(),
-        payload: {
-          error_type: 'speech_recognition',
-          message: `Speech recognition error: ${event.error}`,
-        },
-      });
+      console.error("Speech recognition error", event.error);
+      this.stop();
     };
 
-    // Handle end of recognition
     this.recognition.onend = () => {
-      console.log('Ear: Recognition ended');
-      // Restart if still enabled
-      if (this.enabled && this.isListening) {
-        console.log('Ear: Restarting recognition...');
-        this.startListening();
+      this.isListening = false;
+      if (this.onStateChange) {
+        this.onStateChange(false);
       }
     };
   }
 
-  /**
-   * Start listening to microphone
-   */
-  public startListening(): void {
-    if (!this.recognition) {
-      console.error('Ear: Speech recognition not initialized');
-      return;
-    }
-
-    if (this.isListening) {
-      console.log('Ear: Already listening');
-      return;
-    }
-
-    try {
-      this.recognition.start();
-      this.isListening = true;
-      console.log('Ear: Started listening...');
-    } catch (error) {
-      console.error('Ear: Failed to start listening:', error);
+  public start() {
+    if (this.recognition && !this.isListening) {
+      try {
+        this.recognition.start();
+        this.isListening = true;
+        if (this.onStateChange) {
+          this.onStateChange(true);
+        }
+      } catch (error) {
+        console.error("Failed to start speech recognition:", error);
+      }
     }
   }
 
-  /**
-   * Stop listening to microphone
-   */
-  public stopListening(): void {
-    if (!this.recognition || !this.isListening) {
-      return;
-    }
-
-    try {
+  public stop() {
+    if (this.recognition && this.isListening) {
       this.recognition.stop();
       this.isListening = false;
-      console.log('Ear: Stopped listening');
-    } catch (error) {
-      console.error('Ear: Failed to stop listening:', error);
+      if (this.onStateChange) {
+        this.onStateChange(false);
+      }
     }
   }
 
-  /**
-   * Enable the Ear module
-   */
-  public enable(): void {
-    this.enabled = true;
-    this.startListening();
+  public toggle() {
+    if (this.isListening) {
+      this.stop();
+    } else {
+      this.start();
+    }
   }
 
-  /**
-   * Disable the Ear module
-   */
-  public disable(): void {
-    this.enabled = false;
-    this.stopListening();
+  public setOnStateChange(callback: (isListening: boolean) => void) {
+    this.onStateChange = callback;
   }
 
-  /**
-   * Check if module is enabled
-   */
-  public isEnabled(): boolean {
-    return this.enabled;
-  }
-
-  /**
-   * Publish AUDIO_EVENT to event bus
-   */
-  private publishAudioEvent(transcript: string, confidence: number): void {
-    const event: Event = {
-      id: crypto.randomUUID(),
-      source_module: 'ear',
-      type: 'AUDIO_EVENT',
-      timestamp: new Date().toISOString(),
-      payload: {
-        transcript,
-        confidence,
-        language: 'en-US',
-      },
-    };
-
-    this.eventBus.publish(event);
+  private async publishHearingEvent(text: string, confidence: number) {
+    try {
+      await apiClient.publishEvent({
+        source_module: "ear",
+        type: "HEARING_EVENT",
+        payload: {
+          text,
+          confidence,
+          isFinal: true
+        }
+      });
+    } catch (error) {
+      console.error("Failed to publish HEARING_EVENT:", error);
+    }
   }
 }

@@ -26,6 +26,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -169,6 +170,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -188,6 +190,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -249,6 +252,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -312,6 +316,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -385,6 +390,7 @@ describe('EventLog Property Tests', () => {
   it('should display all event types within 200ms', () => {
     const eventTypes: EventType[] = [
       'VISION_EVENT',
+      'HEARING_EVENT',
       'SYSTEM_ACTION',
       'SPEECH_COMPLETE',
       'ACTION_COMPLETE',
@@ -436,10 +442,11 @@ describe('EventLog Property Tests', () => {
           // Verify the event has the correct color coding
           const colorClass = eventTypeElement?.className;
           expect(colorClass).toBeTruthy();
-          
+
           // Each event type should have a specific color
           const expectedColors: Record<EventType, string> = {
             VISION_EVENT: 'text-blue-400',
+            HEARING_EVENT: 'text-orange-400',
             SYSTEM_ACTION: 'text-purple-400',
             SPEECH_COMPLETE: 'text-green-400',
             ACTION_COMPLETE: 'text-green-400',
@@ -472,6 +479,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -486,7 +494,7 @@ describe('EventLog Property Tests', () => {
         ),
         (events) => {
           // Sort events in reverse chronological order (newest first) as they should be passed to the component
-          const sortedEvents = [...events].sort((a, b) => 
+          const sortedEvents = [...events].sort((a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
 
@@ -513,7 +521,7 @@ describe('EventLog Property Tests', () => {
           for (let i = 0; i < renderedTimestamps.length - 1; i++) {
             const currentTime = new Date(sortedEvents[i].timestamp).getTime();
             const nextTime = new Date(sortedEvents[i + 1].timestamp).getTime();
-            
+
             // Current event should be newer than or equal to the next event
             expect(currentTime).toBeGreaterThanOrEqual(nextTime);
           }
@@ -522,7 +530,7 @@ describe('EventLog Property Tests', () => {
           if (sortedEvents.length > 0) {
             const firstEventType = eventElements[0].querySelector('.font-semibold');
             expect(firstEventType?.textContent).toBe(sortedEvents[0].type);
-            
+
             const firstEventSource = eventElements[0].textContent;
             expect(firstEventSource).toContain(sortedEvents[0].source_module);
           }
@@ -532,7 +540,7 @@ describe('EventLog Property Tests', () => {
           if (displayLimit > 1) {
             const lastEventType = eventElements[displayLimit - 1].querySelector('.font-semibold');
             expect(lastEventType?.textContent).toBe(sortedEvents[displayLimit - 1].type);
-            
+
             const lastEventSource = eventElements[displayLimit - 1].textContent;
             expect(lastEventSource).toContain(sortedEvents[displayLimit - 1].source_module);
           }
@@ -557,7 +565,7 @@ describe('EventLog Property Tests', () => {
           // Create events with the same timestamp but unique IDs
           const sameTimestamp = new Date(timestamp).toISOString();
           const events: Event[] = [];
-          
+
           for (let i = 0; i < eventCount; i++) {
             events.push({
               id: `event-${timestamp}-${i}`, // Ensure unique IDs
@@ -583,7 +591,7 @@ describe('EventLog Property Tests', () => {
             const eventElement = eventElements[i];
             const eventTypeElement = eventElement.querySelector('.font-semibold');
             expect(eventTypeElement?.textContent).toBe(events[i].type);
-            
+
             const eventText = eventElement.textContent || '';
             expect(eventText).toContain(events[i].source_module);
           }
@@ -653,6 +661,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -667,7 +676,7 @@ describe('EventLog Property Tests', () => {
         ),
         (maxEvents, events) => {
           // Sort events in reverse chronological order (newest first)
-          const sortedEvents = [...events].sort((a, b) => 
+          const sortedEvents = [...events].sort((a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
 
@@ -717,6 +726,7 @@ describe('EventLog Property Tests', () => {
             source_module: fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'system'),
             type: fc.constantFrom<EventType>(
               'VISION_EVENT',
+              'HEARING_EVENT',
               'SYSTEM_ACTION',
               'SPEECH_COMPLETE',
               'ACTION_COMPLETE',
@@ -759,7 +769,7 @@ describe('EventLog Property Tests', () => {
             const timestampElement = eventElement.querySelector('.text-xs.text-gray-600');
             expect(timestampElement).toBeTruthy();
             expect(timestampElement?.textContent).toBeTruthy();
-            
+
             // Verify the timestamp is formatted correctly (should be a valid time string)
             const timestampText = timestampElement?.textContent || '';
             expect(timestampText.length).toBeGreaterThan(0);
@@ -773,14 +783,14 @@ describe('EventLog Property Tests', () => {
             // After clicking, the payload should be visible
             const payloadElement = eventElement.querySelector('pre.text-xs.text-gray-400');
             expect(payloadElement).toBeTruthy();
-            
+
             // Verify the payload contains JSON representation
             const payloadText = payloadElement?.textContent || '';
             expect(payloadText.length).toBeGreaterThan(0);
-            
+
             // Verify it's valid JSON by parsing it
             expect(() => JSON.parse(payloadText)).not.toThrow();
-            
+
             // Verify the parsed payload matches the original event payload
             // (accounting for JSON serialization quirks like -0 becoming 0)
             const parsedPayload = JSON.parse(payloadText);
@@ -845,7 +855,7 @@ describe('EventLog Property Tests', () => {
 
           const payloadElement = eventElement!.querySelector('pre.text-xs.text-gray-400');
           expect(payloadElement).toBeTruthy();
-          
+
           const payloadText = payloadElement?.textContent || '';
           const parsedPayload = JSON.parse(payloadText);
           expect(parsedPayload).toEqual(event.payload);
@@ -913,10 +923,10 @@ describe('EventLog Property Tests', () => {
           // Verify complex payload is displayed correctly
           const payloadElement = eventElement!.querySelector('pre.text-xs.text-gray-400');
           expect(payloadElement).toBeTruthy();
-          
+
           const payloadText = payloadElement?.textContent || '';
           const parsedPayload = JSON.parse(payloadText);
-          
+
           // Verify the complex structure is preserved
           expect(parsedPayload).toEqual(event.payload);
           expect(parsedPayload.level1).toBe(event.payload.level1);
@@ -979,7 +989,7 @@ describe('EventLog Property Tests', () => {
           // Verify empty payload is displayed
           const payloadElement = eventElement!.querySelector('pre.text-xs.text-gray-400');
           expect(payloadElement).toBeTruthy();
-          
+
           const payloadText = payloadElement?.textContent || '';
           const parsedPayload = JSON.parse(payloadText);
           expect(parsedPayload).toEqual({});
@@ -1047,12 +1057,12 @@ describe('EventLog Property Tests', () => {
 
           const payloadElement = eventElement!.querySelector('pre.text-xs.text-gray-400');
           expect(payloadElement).toBeTruthy();
-          
+
           const payloadText = payloadElement?.textContent || '';
           // Verify it's valid JSON
           expect(() => JSON.parse(payloadText)).not.toThrow();
           const parsedPayload = JSON.parse(payloadText);
-          
+
           // Verify the payload round-trips through JSON serialization
           // (this accounts for JSON quirks like -0 becoming 0, undefined becoming null, etc.)
           expect(parsedPayload).toEqual(JSON.parse(JSON.stringify(payload)));

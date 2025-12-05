@@ -25,6 +25,7 @@ describe('CreatureCanvas Property Tests', () => {
           brain: fc.boolean(),
           mouth: fc.boolean(),
           tentacle: fc.boolean(),
+          ear: fc.boolean(),
         }),
         (moduleStates) => {
           // Create module info array based on generated states
@@ -57,6 +58,13 @@ describe('CreatureCanvas Property Tests', () => {
               enabled: moduleStates.tentacle,
               capabilities: ['web_actions'],
             },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: moduleStates.ear,
+              capabilities: ['hearing'],
+            },
           ];
 
           // Render the component
@@ -67,11 +75,11 @@ describe('CreatureCanvas Property Tests', () => {
           expect(svg).toBeTruthy();
 
           // Verify each module's visual state
-          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle'];
-          
+          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle', 'ear'];
+
           moduleIds.forEach((moduleId) => {
             const isEnabled = moduleStates[moduleId];
-            
+
             // Find the module group in the SVG
             const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
             expect(moduleGroup).toBeTruthy();
@@ -110,7 +118,7 @@ describe('CreatureCanvas Property Tests', () => {
 
             // Find glow effect elements (circles/ellipses with fill)
             const glowElements = moduleGroup!.querySelectorAll('circle[fill], ellipse[fill]');
-            
+
             if (glowElements.length > 0) {
               // Check that glow elements have appropriate colors
               const hasCorrectGlow = Array.from(glowElements).some((element) => {
@@ -223,14 +231,14 @@ describe('CreatureCanvas Property Tests', () => {
 
     // All module labels should be neon green
     const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle'];
-    
+
     moduleIds.forEach((moduleId) => {
       const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
       expect(moduleGroup).toBeTruthy();
 
       const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
         .find(text => text.textContent?.toUpperCase().includes(moduleId.toUpperCase()));
-      
+
       const labelFill = labelText!.getAttribute('fill');
       expect(labelFill).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
     });
@@ -249,6 +257,7 @@ describe('CreatureCanvas Property Tests', () => {
           brain: fc.boolean(),
           mouth: fc.boolean(),
           tentacle: fc.boolean(),
+          ear: fc.boolean(),
         }).filter(states => {
           // Ensure we have at least one enabled and one disabled
           const values = Object.values(states);
@@ -284,6 +293,13 @@ describe('CreatureCanvas Property Tests', () => {
               enabled: moduleStates.tentacle,
               capabilities: ['web_actions'],
             },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: moduleStates.ear,
+              capabilities: ['hearing'],
+            },
           ];
 
           const { container } = render(<CreatureCanvas modules={modules} />);
@@ -294,16 +310,16 @@ describe('CreatureCanvas Property Tests', () => {
           let enabledCount = 0;
           let disabledCount = 0;
 
-          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle'];
-          
+          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle', 'ear'];
+
           moduleIds.forEach((moduleId) => {
             const isEnabled = moduleStates[moduleId];
             const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
             const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
               .find(text => text.textContent?.toUpperCase().includes(moduleId.toUpperCase()));
-            
+
             const labelFill = labelText!.getAttribute('fill');
-            
+
             if (isEnabled) {
               expect(labelFill).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
               enabledCount++;
@@ -366,6 +382,13 @@ describe('CreatureCanvas Property Tests', () => {
               enabled: false,
               capabilities: ['web_actions'],
             },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: false,
+              capabilities: ['hearing'],
+            },
           ];
 
           // Create activeProcessing set based on generated state
@@ -393,7 +416,7 @@ describe('CreatureCanvas Property Tests', () => {
           if (isProcessing) {
             // When processing, the indicator should be present
             expect(processingIndicator).toBeTruthy();
-            
+
             // Verify it has the correct visual properties
             expect(processingIndicator!.getAttribute('stroke')).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
             expect(processingIndicator!.getAttribute('fill')).toBe('none');
@@ -453,11 +476,11 @@ describe('CreatureCanvas Property Tests', () => {
 
     const svg = container.querySelector('svg');
     const eyeModule = svg!.querySelector('#eye-module');
-    
+
     // Processing indicator should still render based on activeProcessing prop
     // (The component doesn't check if module is enabled before showing indicator)
     const processingIndicator = eyeModule!.querySelector('circle[stroke-dasharray="5,5"]');
-    
+
     // The indicator will be present if activeProcessing includes 'eye'
     // This is the actual behavior of the component
     expect(processingIndicator).toBeTruthy();
@@ -504,6 +527,13 @@ describe('CreatureCanvas Property Tests', () => {
               description: 'Web actions',
               enabled: false,
               capabilities: ['web_actions'],
+            },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: false,
+              capabilities: ['hearing'],
             },
           ];
 
@@ -553,7 +583,7 @@ describe('CreatureCanvas Property Tests', () => {
     fc.assert(
       fc.property(
         // Generate random module ID and initial state
-        fc.constantFrom('eye', 'brain', 'mouth', 'tentacle'),
+        fc.constantFrom('eye', 'brain', 'mouth', 'tentacle', 'ear'),
         fc.boolean(),
         (moduleId, initialState) => {
           // Create initial modules array with the generated state
@@ -585,6 +615,13 @@ describe('CreatureCanvas Property Tests', () => {
               description: 'Web actions',
               enabled: moduleId === 'tentacle' ? enabled : false,
               capabilities: ['web_actions'],
+            },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: moduleId === 'ear' ? enabled : false,
+              capabilities: ['hearing'],
             },
           ];
 
@@ -619,7 +656,7 @@ describe('CreatureCanvas Property Tests', () => {
           expect(labelText).toBeTruthy();
 
           const labelFill = labelText!.getAttribute('fill');
-          
+
           if (newState) {
             // Module is now enabled - should have neon green
             expect(labelFill).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
@@ -644,7 +681,7 @@ describe('CreatureCanvas Property Tests', () => {
         fc.array(fc.boolean(), { minLength: 2, maxLength: 5 }),
         (stateSequence) => {
           const moduleId: ModuleId = 'eye';
-          
+
           const createModules = (enabled: boolean): ModuleInfo[] => [
             {
               id: 'eye',
@@ -674,6 +711,13 @@ describe('CreatureCanvas Property Tests', () => {
               enabled: false,
               capabilities: ['web_actions'],
             },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: false,
+              capabilities: ['hearing'],
+            },
           ];
 
           // Render with initial state
@@ -698,9 +742,9 @@ describe('CreatureCanvas Property Tests', () => {
             const moduleGroup = svg.querySelector(`#${moduleId}-module`);
             const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
               .find(text => text.textContent?.toUpperCase().includes(moduleId.toUpperCase()));
-            
+
             const labelFill = labelText!.getAttribute('fill');
-            
+
             if (stateSequence[i]) {
               expect(labelFill).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
             } else {
@@ -726,12 +770,14 @@ describe('CreatureCanvas Property Tests', () => {
           brain: fc.boolean(),
           mouth: fc.boolean(),
           tentacle: fc.boolean(),
+          ear: fc.boolean(),
         }),
         fc.record({
           eye: fc.boolean(),
           brain: fc.boolean(),
           mouth: fc.boolean(),
           tentacle: fc.boolean(),
+          ear: fc.boolean(),
         }),
         (initialStates, newStates) => {
           const createModules = (states: typeof initialStates): ModuleInfo[] => [
@@ -763,6 +809,13 @@ describe('CreatureCanvas Property Tests', () => {
               enabled: states.tentacle,
               capabilities: ['web_actions'],
             },
+            {
+              id: 'ear',
+              name: 'Ear Module',
+              description: 'Speech-to-text',
+              enabled: states.ear,
+              capabilities: ['hearing'],
+            },
           ];
 
           // Render with initial states
@@ -787,8 +840,8 @@ describe('CreatureCanvas Property Tests', () => {
           expect(updateTime).toBeLessThan(500);
 
           // Verify all modules reflect their new states
-          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle'];
-          
+          const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle', 'ear'];
+
           moduleIds.forEach((moduleId) => {
             const moduleGroup = svg.querySelector(`#${moduleId}-module`);
             expect(moduleGroup).toBeTruthy();
@@ -798,7 +851,7 @@ describe('CreatureCanvas Property Tests', () => {
             expect(labelText).toBeTruthy();
 
             const labelFill = labelText!.getAttribute('fill');
-            
+
             if (newStates[moduleId]) {
               expect(labelFill).toMatch(/#39FF14|rgb\(57,\s*255,\s*20\)/i);
             } else {

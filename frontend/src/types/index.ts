@@ -1,10 +1,10 @@
 // Type definitions for ChimeraForge
 
-export type ModuleId = "eye" | "brain" | "mouth" | "ear";
+export type ModuleId = "eye" | "brain" | "mouth" | "ear" | "tentacle";
 
 export type EventType =
   | "VISION_EVENT"
-  | "AUDIO_EVENT"
+  | "HEARING_EVENT"
   | "SYSTEM_ACTION"
   | "SPEECH_COMPLETE"
   | "ACTION_COMPLETE"
@@ -12,10 +12,10 @@ export type EventType =
   | "MODULE_STATE_CHANGED"
   | "ERROR";
 
-export interface AudioEventPayload {
-  transcript: string;
+export interface HearingPayload {
+  text: string;
   confidence: number;
-  language: string;
+  isFinal: boolean;
 }
 
 export interface ModuleInfo {

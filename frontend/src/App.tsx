@@ -19,6 +19,7 @@ function App() {
   const earModuleRef = useRef<EarModule | null>(null);
   const [activeProcessing, setActiveProcessing] = useState<Set<string>>(new Set());
   const [detections, setDetections] = useState<VisionEventPayload[]>([]);
+  const [isListening, setIsListening] = useState(false);
 
   const eyeModule = modules.find((m) => m.id === "eye");
   const eyeEnabled = eyeModule?.enabled || false;
@@ -26,8 +27,7 @@ function App() {
   const mouthModule = modules.find((m) => m.id === "mouth");
   const mouthEnabled = mouthModule?.enabled || false;
 
-  const earModule = modules.find((m) => m.id === "ear");
-  const earEnabled = earModule?.enabled || false;
+
 
   // Track active processing based on recent events
   useEffect(() => {
@@ -75,33 +75,12 @@ function App() {
   }, []);
 
   // Initialize EarModule with event bus
+  // Initialize EarModule
   useEffect(() => {
     if (!earModuleRef.current) {
-      // Create a simple event bus for the Ear module
-      const eventBus = {
-        publish: async (event: any) => {
-          // Send audio event to backend
-          try {
-            await apiClient.publishEvent({
-              source_module: event.source_module,
-              type: event.type,
-              payload: event.payload,
-            });
-          } catch (err) {
-            console.error("Failed to publish audio event:", err);
-          }
-        },
-      };
-      
-      earModuleRef.current = new EarModule(eventBus);
+      earModuleRef.current = new EarModule();
+      earModuleRef.current.setOnStateChange(setIsListening);
     }
-
-    return () => {
-      if (earModuleRef.current) {
-        earModuleRef.current.disable();
-        earModuleRef.current = null;
-      }
-    };
   }, []);
 
   // Update MouthModule enabled state
@@ -111,16 +90,7 @@ function App() {
     }
   }, [mouthEnabled]);
 
-  // Update EarModule enabled state
-  useEffect(() => {
-    if (earModuleRef.current) {
-      if (earEnabled) {
-        earModuleRef.current.enable();
-      } else {
-        earModuleRef.current.disable();
-      }
-    }
-  }, [earEnabled]);
+
 
   // Handle events for MouthModule
   useEffect(() => {
@@ -181,6 +151,16 @@ function App() {
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => earModuleRef.current?.toggle()}
+              className={`px-4 py-2 rounded-full font-bold transition-colors flex items-center gap-2 ${isListening
+                  ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
+                  : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                }`}
+            >
+              <span>{isListening ? "🎤 Listening..." : "🎤 Enable Mic"}</span>
+            </button>
+
             <div className="flex items-center gap-2">
               <div
                 className={`w-3 h-3 rounded-full ${connected ? "bg-green-400" : "bg-red-400"
