@@ -60,8 +60,10 @@ class BrainModule:
         self.model = genai.GenerativeModel('gemini-2.5-flash')
         
         # Rate limiting: track last processing time
+        # Rate limiting: track last processing time
         self.last_process_time = 0
-        self.min_interval = 10.0  # Minimum 10 seconds between responses (avoid 429 quota limits)
+        self.vision_interval = 10.0   # 10s for vision (prevent spam)
+        self.hearing_interval = 1.0   # 1s for hearing (conversational)
         
         # Subscribe to VISION_EVENT from event bus
         self.event_bus.subscribe(self.module_id, self.on_event)
@@ -80,7 +82,13 @@ class BrainModule:
         if event.type == EventType.VISION_EVENT or event.type == EventType.HEARING_EVENT:
             # Rate limiting: skip if too soon after last response
             current_time = time.time()
-            if current_time - self.last_process_time < self.min_interval:
+            
+            # Determine appropriate interval
+            interval = self.vision_interval
+            if event.type == EventType.HEARING_EVENT:
+                interval = self.hearing_interval
+                
+            if current_time - self.last_process_time < interval:
                 print(f"Brain: Skipping event (rate limited, {current_time - self.last_process_time:.1f}s since last)")
                 return
             
