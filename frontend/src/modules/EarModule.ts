@@ -43,6 +43,9 @@ declare global {
     webkitSpeechRecognition: {
       new(): SpeechRecognition;
     };
+    SpeechRecognition: {
+      new(): SpeechRecognition;
+    };
   }
 }
 
@@ -52,11 +55,13 @@ export class EarModule {
   private onStateChange: ((isListening: boolean) => void) | null = null;
 
   constructor() {
-    if ('webkitSpeechRecognition' in window) {
-      this.recognition = new window.webkitSpeechRecognition();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      this.recognition = new SpeechRecognition();
       this.setupRecognition();
     } else {
       console.error("Web Speech API not supported in this browser");
+      // Ideally we should notify the user via UI
     }
   }
 
