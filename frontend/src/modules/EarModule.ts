@@ -68,7 +68,7 @@ export class EarModule {
   private setupRecognition() {
     if (!this.recognition) return;
 
-    this.recognition.continuous = false; // Stop after one sentence
+    this.recognition.continuous = true; // Keep listening
     this.recognition.interimResults = false;
     this.recognition.lang = 'en-US';
 
@@ -90,9 +90,18 @@ export class EarModule {
     };
 
     this.recognition.onend = () => {
-      this.isListening = false;
-      if (this.onStateChange) {
-        this.onStateChange(false);
+      // If we are supposed to be listening, restart
+      if (this.isListening) {
+        console.log("Speech recognition ended, restarting...");
+        try {
+          this.recognition?.start();
+        } catch (e) {
+          console.error("Failed to restart recognition:", e);
+          this.isListening = false;
+          if (this.onStateChange) this.onStateChange(false);
+        }
+      } else {
+        if (this.onStateChange) this.onStateChange(false);
       }
     };
   }
