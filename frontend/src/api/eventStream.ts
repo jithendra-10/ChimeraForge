@@ -14,8 +14,9 @@ export class EventStream {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000; // Start with 1 second
 
-  constructor(url: string = "/api/events/stream") {
-    this.url = url;
+  constructor(url?: string) {
+    const baseUrl = import.meta.env.VITE_API_URL || "/api";
+    this.url = url || `${baseUrl}/events/stream`;
   }
 
   // Connect to the event stream
