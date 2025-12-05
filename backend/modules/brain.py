@@ -57,7 +57,7 @@ class BrainModule:
             raise ValueError("Gemini API key not provided and GEMINI_API_KEY environment variable not set")
         
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
         
         # Rate limiting: track last processing time
         # Rate limiting: track last processing time
@@ -218,6 +218,16 @@ class BrainModule:
                 )
         
         except Exception as e:
+            # Check for quota exceeded (429)
+            error_str = str(e)
+            if "429" in error_str or "ResourceExhausted" in type(e).__name__:
+                print(f"Brain: Quota exceeded. Switching to fallback mode.")
+                fallback_text = "My mind is exhausted... I need to rest for a while."
+                return BrainResponse(
+                    text=fallback_text,
+                    speak=fallback_text if detected else None
+                )
+
             # Log error with full context
             print(f"ERROR calling Gemini API: {type(e).__name__}: {e}")
             import traceback

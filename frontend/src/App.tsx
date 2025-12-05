@@ -153,12 +153,13 @@ function App() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => earModuleRef.current?.toggle()}
-              className={`px-4 py-2 rounded-full font-bold transition-colors flex items-center gap-2 ${isListening
-                  ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
+              className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 ${isListening
+                  ? "bg-red-500 hover:bg-red-600 text-white animate-pulse ring-2 ring-red-400"
                   : "bg-gray-700 hover:bg-gray-600 text-gray-300"
                 }`}
             >
-              <span>{isListening ? "🎤 Listening..." : "🎤 Enable Mic"}</span>
+              <span className="text-xl">{isListening ? "🎙️" : "🎤"}</span>
+              <span>{isListening ? "Listening..." : "Enable Mic"}</span>
             </button>
 
             <div className="flex items-center gap-2">

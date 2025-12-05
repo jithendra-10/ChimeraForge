@@ -69,17 +69,18 @@ export class EarModule {
     if (!this.recognition) return;
 
     this.recognition.continuous = true; // Keep listening
-    this.recognition.interimResults = false;
+    this.recognition.interimResults = true; // Show what is being heard
     this.recognition.lang = 'en-US';
 
     this.recognition.onresult = async (event: SpeechRecognitionEvent) => {
-      const result = event.results[event.resultIndex][0];
-      const transcript = result.transcript;
-      const confidence = result.confidence;
+      const result = event.results[event.resultIndex]; // The Result object has isFinal
+      const alternative = result[0]; // The Alternative object has transcript
+      const transcript = alternative.transcript;
+      const confidence = alternative.confidence;
 
-      console.log(`Ear heard: "${transcript}" (${confidence})`);
+      console.log(`Ear heard (${result.isFinal ? 'Final' : 'Interim'}): "${transcript}"`);
 
-      if (transcript.trim().length > 0) {
+      if (result.isFinal && transcript.trim().length > 0) {
         await this.publishHearingEvent(transcript, confidence);
       }
     };
@@ -111,6 +112,7 @@ export class EarModule {
       try {
         this.recognition.start();
         this.isListening = true;
+        console.log("EarModule: Started listening");
         if (this.onStateChange) {
           this.onStateChange(true);
         }
