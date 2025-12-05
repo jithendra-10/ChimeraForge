@@ -648,7 +648,7 @@ describe('CreatureCanvas Property Tests', () => {
           expect(updateTime).toBeLessThan(500);
 
           // Verify the visual state actually changed
-          const moduleGroup = svg.querySelector(`#${moduleId}-module`);
+          const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
           expect(moduleGroup).toBeTruthy();
 
           const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
@@ -739,7 +739,7 @@ describe('CreatureCanvas Property Tests', () => {
             expect(updateTime).toBeLessThan(500);
 
             // Verify the visual state matches the current state
-            const moduleGroup = svg.querySelector(`#${moduleId}-module`);
+            const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
             const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
               .find(text => text.textContent?.toUpperCase().includes(moduleId.toUpperCase()));
 
@@ -843,7 +843,7 @@ describe('CreatureCanvas Property Tests', () => {
           const moduleIds: ModuleId[] = ['eye', 'brain', 'mouth', 'tentacle', 'ear'];
 
           moduleIds.forEach((moduleId) => {
-            const moduleGroup = svg.querySelector(`#${moduleId}-module`);
+            const moduleGroup = svg!.querySelector(`#${moduleId}-module`);
             expect(moduleGroup).toBeTruthy();
 
             const labelText = Array.from(moduleGroup!.querySelectorAll('text'))
