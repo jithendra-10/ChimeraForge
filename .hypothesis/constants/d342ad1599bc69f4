@@ -1,0 +1,4 @@
+# file: D:\PROJECTS\ChimeraForge\backend\modules\brain.py
+# hypothesis_version: 6.148.5
+
+[0.0, 0.8, 200, 'OPENAI_API_KEY', 'brain', 'confidence', 'content', 'details', 'detected', 'error', 'error_type', 'event_id', 'external_service', 'gpt-3.5-turbo', 'message', 'object_type', 'open_url', 'processing', 'reasoning', 'recoverable', 'role', 'speak', 'system', 'text', 'user', 'vision_event_id']

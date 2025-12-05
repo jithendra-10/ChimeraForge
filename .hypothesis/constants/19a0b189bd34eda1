@@ -1,0 +1,4 @@
+# file: D:\PROJECTS\ChimeraForge\backend\app.py
+# hypothesis_version: 6.148.5
+
+[0.1, 1000, '*', '/', '/api/events', '/api/events/stream', '/api/logs', '/api/modules', '/api/vision/frame', '1.0.0', 'Cache-Control', 'ChimeraForge', 'Connection', 'Event payload data', 'Event type', 'OPENAI_API_KEY', 'capabilities', 'description', 'enabled', 'id', 'keep-alive', 'message', 'module_id', 'name', 'no-cache', 'payload', 'source_module', 'system', 'text/event-stream', 'timestamp', 'type', 'version']

@@ -1,0 +1,4 @@
+# file: D:\PROJECTS\ChimeraForge\backend\core\module_registry.py
+# hypothesis_version: 6.148.5
+
+['Brain Module', 'Eye Module', 'Mouth Module', 'Tentacle Module', 'action_planning', 'brain', 'context_analysis', 'eye', 'face_detection', 'llm_reasoning', 'mouth', 'object_detection', 'search', 'tentacle', 'text_to_speech', 'url_opening', 'vision_processing', 'voice_output', 'web_actions']

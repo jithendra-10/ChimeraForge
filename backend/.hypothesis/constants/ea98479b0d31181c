@@ -1,0 +1,4 @@
+# file: D:\PROJECTS\ChimeraForge\backend\modules\__init__.py
+# hypothesis_version: 6.148.5
+
+['BoundingBox', 'BrainModule', 'BrainResponse', 'EyeModule', 'FaceDetection']
